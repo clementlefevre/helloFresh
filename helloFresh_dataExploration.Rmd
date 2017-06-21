@@ -1,6 +1,8 @@
 ---
 title: "Hello Fresh"
-output: html_notebook
+output:
+  html_document: default
+  html_notebook: default
 ---
 
 ```{r}
@@ -10,6 +12,7 @@ library(tidyr)
 library(ggplot2)
 library(lubridate)
 library(caret)
+sessionInfo()
 ```
 
 
@@ -170,7 +173,7 @@ df.cohort$cohort<-as.character(df.cohort$cohort)
 # dummify the data
 dmy <- dummyVars(" ~ .", data = df.cohort,)
 df.cohort <- data.frame(predict(dmy, newdata = df.cohort))
-df.cohort
+
 ```
 
 #### Create a table of countries category
@@ -180,7 +183,7 @@ df.countries$Country<-as.character(df.countries$Country)
 # dummify the data
 dmy <- dummyVars(" ~ .", data = df.countries)
 df.countries <- data.frame(predict(dmy, newdata = df.countries))
-df.countries
+
 ```
 #### Check if Customer ordered one of the top sellig items :
 ```{r}
@@ -203,7 +206,7 @@ write.csv(df.final,'ukretail_dataset.csv')
 
 We can make a rough check whether our choice of predictor is reasonable:
 ```{r}
-model<-lm(log(order_sequence_1+1)~.-CustomerID,data=df.final)
+model<-lm(order_sequence_1~.-CustomerID,data=df.final)
 summary(model)
 ```
 

@@ -1,6 +1,0 @@
-"0","df.countries <- df.firstInvoice %>% select(CustomerID,Country)"
-"0","df.countries$Country<-as.character(df.countries$Country)"
-"0","# dummify the data"
-"0","dmy <- dummyVars("" ~ ."", data = df.countries)"
-"0","df.countries <- data.frame(predict(dmy, newdata = df.countries))"
-"0","df.countries"

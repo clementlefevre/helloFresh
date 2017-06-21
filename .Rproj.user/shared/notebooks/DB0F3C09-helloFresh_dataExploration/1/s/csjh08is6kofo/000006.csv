@@ -1,5 +1,2 @@
-"0","mean(groupy_country$number_orders)"
-"1","[1]"
-"1"," 4.728814"
-"1","
-"
+"0","groupy_country <- df.per.CustomerID.InvoiceID %>% group_by(CustomerID,Country) %>% summarise(average_order_value = mean(TotalValue), number_orders = n())"
+"0","ggplot(data=groupy_country %>% filter(average_order_value<2000),aes(x=Country,y=(average_order_value)))+geom_boxplot()+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))"

@@ -1,3 +1,0 @@
-"0","df$dayofweek <- as.factor(wday(df$InvoiceDate))"
-"0","df$hourofday <- as.factor(hour(df$InvoiceDate))"
-"0","ggplot(df %>% sample_n(3000),aes(x=dayofweek,y=hourofday,size=OrderValue,color=Country))+ geom_jitter(alpha=0.3)"
