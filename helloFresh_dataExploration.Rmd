@@ -1,0 +1,198 @@
+---
+title: "Hello Fresh"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(stringr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+library(caret)
+```
+
+
+```{r}
+data <- read.csv("UKretail.csv")
+str(data)
+```
+### Format date time, remove cancelled orders.
+```{r}
+df<-data
+df$InvoiceDate <-as.Date(ymd_hms(df$InvoiceDate))
+df$OrderValue <- df$Quantity * df$UnitPrice
+df<- df %>% filter(!grepl("^C",InvoiceNo))
+str(df)
+```
+### Aggregate by CustomerID and InvoiceID :
+```{r}
+
+
+
+df.per.CustomerID.InvoiceID <- df %>% group_by(CustomerID,InvoiceNo,InvoiceDate,Country) %>% summarise(TotalValue=sum(OrderValue)) 
+df.per.CustomerID.InvoiceID<- df.per.CustomerID.InvoiceID %>% group_by(CustomerID)  %>% mutate(PreviousInvoiceDate = lag(InvoiceDate))
+df.per.CustomerID.InvoiceID <- df.per.CustomerID.InvoiceID %>%  arrange(desc(InvoiceDate)) %>% mutate(order_sequence=row_number())
+df.per.CustomerID.InvoiceID$ReorderLeadTime<-df.per.CustomerID.InvoiceID$InvoiceDate-df.per.CustomerID.InvoiceID$PreviousInvoiceDate
+
+```
+
+### group per cohort
+```{r}
+df.firstInvoice <-df %>%
+  group_by(CustomerID) %>%
+  arrange(InvoiceDate) %>%
+  filter(row_number()==1 )
+
+df.firstInvoice$cohort<- as.Date(floor_date(df.firstInvoice$InvoiceDate, "month"))
+groupy_cohort<- df.firstInvoice %>% group_by(cohort) %>% summarise(total_customers=n())
+
+ggplot(data=groupy_cohort,aes(x=cohort,y=total_customers))+geom_bar(stat = "identity")
+```
+
+The first cohort (first invoice in December 2010) should not be taken into account, as it also include  Customers having first ordered before 1st December 2010.
+
+### Frequency and Value of Orders per cohort
+```{r}
+
+
+df.per.CustomerID <- merge(x=df.per.CustomerID.InvoiceID,y=df.firstInvoice[, c("CustomerID","cohort")],by="CustomerID",all.x=TRUE)
+
+df.per.CustomerID<-df.per.CustomerID%>% filter(cohort>"2010-12-01" & cohort<"2011-12-01" )
+
+groupy_frequency <- df.per.CustomerID %>% filter(!is.na(ReorderLeadTime)) %>%  group_by(CustomerID,cohort) %>% summarise(average.ReorderLeadTime=mean(ReorderLeadTime),number_orders=n(), orders_value=mean(TotalValue))
+
+groupy_frequency_cohort<- groupy_frequency %>% group_by(cohort) %>% summarise(average.ReorderLeadTime=mean(average.ReorderLeadTime),average.Orders=mean(number_orders),average_orders_value=mean(orders_value))
+
+
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.ReorderLeadTime))+ geom_bar(stat = "identity")
+
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.Orders))+ geom_bar(stat = "identity")
+
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average_orders_value))+ geom_bar(stat = "identity")
+```
+### Number of orders per cohort
+```{r}
+
+ggplot(data =groupy_frequency,aes(x=cohort,y=number_orders,group=cohort)) + geom_boxplot()
+```
+### Importance of the country for the order value
+### Data preparation
+```{r}
+groupy_country <- df.per.CustomerID.InvoiceID %>% group_by(CustomerID,Country) %>% summarise(average_order_value = mean(TotalValue), number_orders = n())
+ggplot(data=groupy_country %>% filter(average_order_value<2000),aes(x=Country,y=(average_order_value)))+geom_boxplot()+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+
+ggplot(data=groupy_country %>% filter(number_orders<500) ,aes(x=Country,y=(number_orders)))+geom_boxplot()+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+
+mean(groupy_country$number_orders)
+```
+According to this chart, the order value seems to be correlated with the country of origin. We can thus keep this feature as a good predictor for the next Order Value.
+When looking at the distribution of orders per customer for each country, with the exception of EIRE, the average number of order is around 5.
+
+
+
+
+### Define products categories
+
+```{r}
+groupy.StockCode<- df %>% group_by(StockCode) %>% summarise(TotalOrderValue = sum(OrderValue)) %>% arrange(desc(TotalOrderValue)) %>% top_n(100,TotalOrderValue)
+length(unique(df$StockCode))
+sum(groupy.StockCode$TotalOrderValue)/sum(df$OrderValue)
+ggplot(data=groupy.StockCode,aes(x=(reorder(StockCode, TotalOrderValue)),y=TotalOrderValue))+geom_bar(stat = "identity")+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+
+top.selling.products<- groupy.StockCode$StockCode
+```
+ The top 100 Products (2.5% of the total catalog) accounts to one third of the total TurnOver, we could as a matter of keeping it simple, define a new variable for each customer and each order, whether he did order one of those items.
+ 
+Ideally, we should cluster the StockCode to define groups of buying profiles, but given the number of features (3937), such a sparse matrix would be hard to handle on a laptop.
+An other approach would to be define sub-groups of product (Bags, Boxes, Pen, etc...) using word vectorization on the variable Description.
+
+
+### Influence of the ReorderLeadtime on the average Order Value
+```{r}
+groupy_reoderLT_orderValue <- df.per.CustomerID.InvoiceID %>% group_by(CustomerID) %>% summarise(average_LT=as.numeric(mean(ReorderLeadTime,na.rm=TRUE)), average_order_value=mean(TotalValue,na.rm=TRUE)) %>% filter(!is.na(average_LT)) %>% filter(average_order_value<2000)
+
+ggplot(data=groupy_reoderLT_orderValue,aes(x=log(average_LT+1),y=average_order_value)) + geom_point(alpha=0.2)+ geom_smooth(method = 'lm')
+
+cor(groupy_reoderLT_orderValue$average_LT,groupy_reoderLT_orderValue$average_order_value)
+```
+The average reorder leadtime and the average order value are very weakly correlated, we can exclude this feature from the predictors.
+
+### Data preparation
+
+Set a table with for each customerID :
+- average order value,
+- total order value,
+- number of orders,
+- cohort (as category),
+- n to n-5 orders value (as category),
+- country (as category)
+- ordered top selling product(boolean)
+
+
+#### Create a table of average order value and total order value per Customer
+```{r}
+df.orders<-df.per.CustomerID.InvoiceID %>% group_by(CustomerID) %>% summarise(average_order_value = mean(TotalValue), number_orders=n(), total_order_value = sum(TotalValue))
+```
+
+#### Create a table of last n orders values per Customer
+```{r}
+quantile(df.orders$number_orders,probs = .90)
+
+df.orders.sequence<-df.per.CustomerID.InvoiceID %>% filter(order_sequence<10) %>% spread(order_sequence,TotalValue)
+df.orders.sequence<-df.orders.sequence %>%
+  group_by(CustomerID) %>%
+  summarise_each(funs(ifelse(sum(is.na(.)==FALSE)==0, NA, .[which(is.na(.)==FALSE)])), matches("[1-9]"))
+
+colnames(df.orders.sequence) <- paste("order_sequence", colnames(df.orders.sequence), sep = "_")
+names(df.orders.sequence)[names(df.orders.sequence) == 'order_sequence_CustomerID'] <- 'CustomerID'
+df.orders.sequence <- df.orders.sequence %>%
+      mutate_each(funs(replace(., is.na(.), 0)), -CustomerID)
+
+df.orders.sequence <- df.orders.sequence %>% mutate_each(funs(log(.+1)),-CustomerID)
+
+```
+#### Create a table of cohorts categories:
+```{r}
+df.cohort<- df.firstInvoice %>% select(CustomerID,cohort)
+df.cohort$cohort<-as.character(df.cohort$cohort)
+# dummify the data
+dmy <- dummyVars(" ~ .", data = df.cohort,)
+df.cohort <- data.frame(predict(dmy, newdata = df.cohort))
+df.cohort
+```
+
+#### Create a table of countries category
+```{r}
+df.countries <- df.firstInvoice %>% select(CustomerID,Country)
+df.countries$Country<-as.character(df.countries$Country)
+# dummify the data
+dmy <- dummyVars(" ~ .", data = df.countries)
+df.countries <- data.frame(predict(dmy, newdata = df.countries))
+df.countries
+```
+#### Check if Customer ordered one of the top sellig items :
+```{r}
+df$top.selling <- df$StockCode %in% as.character(top.selling.products)
+table(df$top.selling)
+df.top.selling<-df %>% select(CustomerID,top.selling) %>% group_by(CustomerID) %>% summarise(top.selling.purchase=n())
+```
+
+#### Combine all data in a single table
+
+```{r}
+df.final<- merge(x=df.orders,y=df.cohort,by="CustomerID",all.x=TRUE)
+df.final <- merge(x=df.final,y=df.orders.sequence,by="CustomerID",all.x=TRUE)
+df.final <- merge(df.final,df.countries,by="CustomerID",all.x=TRUE)
+df.final <- merge(df.final,df.top.selling,by="CustomerID",all.x=TRUE)
+
+write.csv(df.final,'ukretail_dataset.csv')
+```
+### Features validation
+
+We can make a rough check whether our choice of predictor is reasonable:
+```{r}
+model<-lm(log(order_sequence_1+1)~.-CustomerID,data=df.final)
+summary(model)
+```
+

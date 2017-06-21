@@ -1,0 +1,11 @@
+"0","```r
+
+pal <- colorQuantile(
+  palette = \"Reds\",
+  domain = df_light$number_of_reviews,reverse = FALSE)
+
+m<-leaflet(data = df_light) %>% addTiles() %>%
+  addCircleMarkers(~longitude, ~latitude, popup = ~as.character(name), label = ~as.character(name),stroke = FALSE, fillOpacity = 0.8,color = ~pal(number_of_reviews),radius=2) 
+
+m
+```"

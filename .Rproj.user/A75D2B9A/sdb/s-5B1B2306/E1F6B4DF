@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1498042662074.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E1F6B4DF",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1498042662074,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "43E2996",
+        "caption" : "df.cohort",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=df.cohort&cache_key=43E2996",
+        "displayedObservations" : "4292",
+        "environment" : "",
+        "object" : "df.cohort",
+        "preview" : "0",
+        "totalObservations" : "4292",
+        "variables" : "2"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

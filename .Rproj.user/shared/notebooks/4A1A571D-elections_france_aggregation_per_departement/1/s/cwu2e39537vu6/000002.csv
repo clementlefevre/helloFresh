@@ -1,0 +1,12 @@
+"0","```r
+colos_Exp<-grep('X..Voix.Exp',colnames(df),value = T)
+colos_name<-grep('Nom',colnames(df),value = T)
+colos_Voix<-grep('^Voix',colnames(df),value = T)
+filtered_df_pres<-df %>% select_(.dots = c(colos_Exp,colos_name,colos_Voix,\"Code.de.la.commune\", \"Libellé.de.la.commune\",\"Code.du.département\",\"Libellé.du.département\",\"Votants\",\"Inscrits\",\"Abstentions\" ,\"Exprimés\",\"X..Abs.Ins\",\"X..Exp.Vot\"))
+gather_name<-filtered_df_pres %>% gather(key,'Nom',starts_with('Nom')) 
+gather_scores<- filtered_df_pres%>% gather(key,'Score',starts_with('X..Voix.Exp'))
+gather_voix<- filtered_df_pres%>% gather(key,'Voix',starts_with('Voix'))
+gather_name_scores<- data.frame(select(gather_scores, Score), select(gather_name,Nom,Code.de.la.commune, Libellé.de.la.commune,Code.du.département,Libellé.du.département,Votants,Inscrits,Abstentions,Exprimés,X..Abs.Ins,X..Exp.Vot),select(gather_voix,Voix))
+df_votes.2017<-gather_name_scores
+#ggplot(df_votes.2017,aes(x=Nom,y=Score, col=Nom))+ geom_boxplot()
+```"

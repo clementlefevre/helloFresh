@@ -1,0 +1,6 @@
+"0","df.cohort<- df.firstInvoice %>% select(CustomerID,cohort)"
+"0","df.cohort$cohort<-as.character(df.cohort$cohort)"
+"0","# dummify the data"
+"0","dmy <- dummyVars("" ~ ."", data = df.cohort,)"
+"0","df.cohort <- data.frame(predict(dmy, newdata = df.cohort))"
+"0","df.cohort"

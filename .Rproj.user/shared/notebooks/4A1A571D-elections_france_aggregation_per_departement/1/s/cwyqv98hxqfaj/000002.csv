@@ -1,0 +1,8 @@
+"0","```r
+names(df_votes.2017)[names(df_votes.2017) == \"LE PEN\"] <- \"LE.PEN\"
+names(df_votes.2017)[names(df_votes.2017) == \"DUPONT-AIGNAN\"] <- \"DUPONT.AIGNAN\"
+candidats<-c(\"ARTHAUD\",\"ASSELINEAU\",\"CHEMINADE\",\"DUPONT.AIGNAN\", \"FILLON\",\"HAMON\",\"LASSALLE\",\"LE.PEN\",\"MACRON\",\"MÉLENCHON\",\"POUTOU\")
+groupy_departement<- df_votes.2017 %>% group_by(Code.du.département)  %>% summarise_at(c(candidats,\"Exprimés\"),funs(total_voix=sum(.), ratio_voix=sum(.)/sum(Exprimés)))
+write.csv(groupy_departement,'data/DOI/pres_1erTour_2017_par_departement_candidat.csv')
+View(groupy_departement)
+```"

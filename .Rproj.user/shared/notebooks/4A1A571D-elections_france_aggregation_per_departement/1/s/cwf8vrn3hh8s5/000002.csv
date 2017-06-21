@@ -1,0 +1,5 @@
+"0","```r
+df_votes.2017<- df_votes.2017   %>% group_by(Code.du.département,Libellé.du.département,
+                                       Code.de.la.commune,Libellé.de.la.commune,Nom,Votants,Inscrits,Abstentions,Exprimés,X..Abs.Ins,X..Exp.Vot) %>% summarise(Sum_Voix=sum(Voix)) %>% spread(Nom,Sum_Voix)
+filter(df_votes.2017,grepl('Vichy',Libellé.de.la.commune)& Code.du.département==3)
+```"
