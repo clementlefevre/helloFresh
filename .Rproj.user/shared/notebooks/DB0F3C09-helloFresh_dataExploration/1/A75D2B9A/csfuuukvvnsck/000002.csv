@@ -1,5 +1,0 @@
-"0","df.final<- merge(x=df.orders,y=df.cohort,by=""CustomerID"",all.x=TRUE)"
-"0","df.final <- merge(x=df.final,y=df.orders.sequence,by=""CustomerID"",all.x=TRUE)"
-"0","df.final <- merge(df.final,df.countries,by=""CustomerID"",all.x=TRUE)"
-"0","df.final <- merge(df.final,df.top.selling,by=""CustomerID"",all.x=TRUE)"
-"0","write.csv(df.final,'ukretail_dataset.csv')"

@@ -20,7 +20,7 @@ str(data)
 ### Format date time, remove cancelled orders.
 ```{r}
 df<-data
-df$InvoiceDate <-as.Date(ymd_hms(df$InvoiceDate))
+df$InvoiceDate <-as_datetime((df$InvoiceDate))
 df$OrderValue <- df$Quantity * df$UnitPrice
 df<- df %>% filter(!grepl("^C",InvoiceNo))
 str(df)
@@ -117,6 +117,17 @@ ggplot(data=groupy_reoderLT_orderValue,aes(x=log(average_LT+1),y=average_order_v
 cor(groupy_reoderLT_orderValue$average_LT,groupy_reoderLT_orderValue$average_order_value)
 ```
 The average reorder leadtime and the average order value are very weakly correlated, we can exclude this feature from the predictors.
+
+#### Influence of the day of the week and hour of the day on the order value
+
+```{r}
+df$dayofweek <- as.factor(wday(df$InvoiceDate))
+df$hourofday <- as.factor(hour(df$InvoiceDate))
+ggplot(df %>% sample_n(3000),aes(x=dayofweek,y=hourofday,size=OrderValue,color=Country))+ geom_jitter(alpha=0.3)
+model<-lm(OrderValue~dayofweek+hourofday,data=df)
+summary(model)
+```
+
 
 ### Data preparation
 

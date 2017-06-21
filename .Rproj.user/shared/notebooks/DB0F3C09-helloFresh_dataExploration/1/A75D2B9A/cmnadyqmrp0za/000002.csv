@@ -1,7 +1,0 @@
-"0","df.firstInvoice <-df %>%"
-"0","  group_by(CustomerID) %>%"
-"0","  arrange(InvoiceDate) %>%"
-"0","  filter(row_number()==1 )"
-"0","df.firstInvoice$cohort<- as.Date(floor_date(df.firstInvoice$InvoiceDate, ""month""))"
-"0","groupy_cohort<- df.firstInvoice %>% group_by(cohort) %>% summarise(total_customers=n())"
-"0","ggplot(data=groupy_cohort,aes(x=cohort,y=total_customers))+geom_bar(stat = ""identity"")"

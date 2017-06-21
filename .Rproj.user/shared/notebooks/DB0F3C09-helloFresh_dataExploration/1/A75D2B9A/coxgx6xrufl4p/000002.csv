@@ -1,5 +1,0 @@
-"0","df.per.CustomerID <- merge(x=df.per.CustomerID.InvoiceID,y=df.firstInvoice[, c(""CustomerID"",""cohort"")],by=""CustomerID"",all.x=TRUE)"
-"0","df.per.CustomerID<-df.per.CustomerID%>% filter(cohort>""2010-12-01"" & cohort<""2011-12-01"" )"
-"0","groupy_frequency <- df.per.CustomerID %>% filter(!is.na(ReorderLeadTime)) %>%  group_by(CustomerID,cohort) %>% summarise(average.ReorderLeadTime=mean(ReorderLeadTime),number_orders=n(), orders_value=mean(TotalValue))"
-"0","groupy_frequency_cohort<- groupy_frequency %>% group_by(cohort) %>% summarise(average.ReorderLeadTime=mean(average.ReorderLeadTime),average.Orders=mean(number_orders),average_orders_value=mean(orders_value))"
-"0","ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.ReorderLeadTime))+ geom_bar(stat = ""identity"")"

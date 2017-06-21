@@ -1,1 +1,0 @@
-"0","ggplot(data=groupy_country %>% filter(number_orders<500) ,aes(x=Country,y=(number_orders)))+geom_boxplot()+theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))"
