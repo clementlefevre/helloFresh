@@ -13,4 +13,4 @@
 "0","names(df.orders.sequence)[names(df.orders.sequence) == 'order_sequence_CustomerID'] <- 'CustomerID'"
 "0","df.orders.sequence <- df.orders.sequence %>%"
 "0","      mutate_each(funs(replace(., is.na(.), 0)), -CustomerID)"
-"0","#df.orders.sequence <- df.orders.sequence %>% mutate_each(funs(log(.+1)),-CustomerID)"
+"0","df.orders.sequence <- df.orders.sequence %>% mutate_each(funs(log(.+1)),-CustomerID)"
