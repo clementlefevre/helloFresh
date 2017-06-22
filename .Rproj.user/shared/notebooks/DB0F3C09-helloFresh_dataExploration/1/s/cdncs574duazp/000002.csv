@@ -1,1 +1,1 @@
-"0","df.orders<-df.per.CustomerID.InvoiceID %>% group_by(CustomerID) %>% summarise(average_order_value = mean(TotalValue), number_orders=n(), total_order_value = sum(TotalValue))"
+"0","df.orders<-df.per.CustomerID.InvoiceID %>% group_by(CustomerID) %>% summarise(average_order_value = log(mean(TotalValue)+1), number_orders=n(), total_order_value = sum(TotalValue))"
