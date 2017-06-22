@@ -1,5 +1,10 @@
-Hello Fresh
+Hello Fresh - Predicting the next order's value
 ================
+
+Assignment for a Data Scientist training position at HelloFresh Berlin.
+
+Part 1 : EDA and features selection.
+====================================
 
 ``` r
 library(dplyr)
@@ -413,11 +418,11 @@ write.csv(df.final,'ukretail_dataset.csv')
 
 ### Features validation
 
-We can make a rough check whether our choice of predictor is reasonable:
+We can make a rough check whether our choice of predictors is reasonable:
 
 ``` r
 first.5.orders<-paste0("order_",seq(1,5))
-ggpairs(df.orders.sequence %>% select(one_of(first.5.orders)))+ ggtitle("Correlation in the customer's last 5 orders")
+ggpairs(df.orders.sequence %>% select(one_of(first.5.orders)))  + ggtitle("Correlation in the customer's last 5 orders")
 ```
 
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-19-1.png)
@@ -515,6 +520,6 @@ summary(model)
     ## Multiple R-squared:  0.6557, Adjusted R-squared:  0.6502 
     ## F-statistic:   120 on 67 and 4223 DF,  p-value: < 2.2e-16
 
-The last order does not correlate with the previous one, because we include the customer with a single order. For the other, their is a strong multicollinearity amongst then (0.43 to 0.782). The feature "Number of order" might compensate this weakness in the model.
+The last order does not correlate with the previous one, because we include the customer with a single order. For the other, their is a strong multicollinearity amongst then (0.43 to 0.782). The feature "Number of orders" might compensate this weakness in the model.
 
-When using all the selected features, we get an adjusted determination factor of 0.65, which is not to bad.
+When using all the selected features, we get an adjusted determination factor of 0.65, which is not too bad.
