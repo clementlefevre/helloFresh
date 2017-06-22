@@ -342,7 +342,7 @@ summary(model)
     ## Multiple R-squared:  0.002298,   Adjusted R-squared:  0.002238 
     ## F-statistic: 38.73 on 19 and 319537 DF,  p-value: < 2.2e-16
 
-Saturday is missing : there are no invoice proceeded at this day. The correlation between time of purchase and its value are not correlated. Thus this feature will not be considered for the model.
+Saturday is missing : there are no invoice proceeded at this day. The correlation between time of purchase and its value are is non-existent. Thus this feature will not be considered for the model.
 
 ### Data preparation
 
