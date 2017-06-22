@@ -1,6 +1,8 @@
 Hello Fresh - Predicting the next order's value
 ================
 
+Clement Lefevre 2017-06-22
+
 Assignment for a Data Scientist training position at HelloFresh Berlin.
 
 Part 1 : EDA and features selection.
@@ -150,12 +152,12 @@ Exploratory Data Analysis
 ``` r
 # filter on the 97 percentile
 q.97<-quantile(df.per.CustomerID.InvoiceID$TotalValue,.97)
-ggplot(df.per.CustomerID.InvoiceID %>% filter(TotalValue<q.97) ,aes(x=TotalValue))+geom_histogram(bins =50) +theme_fivethirtyeight()+ ggtitle("Distribution of the 97 Percentile for Invoice Values")
+ggplot(df.per.CustomerID.InvoiceID %>% filter(TotalValue<q.97) ,aes(x=TotalValue))+geom_histogram(bins =50,fill="steelblue") +theme_fivethirtyeight()+ ggtitle("Distribution of the 97 Percentile for Invoice Values (GBP")
 ```
 
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-From the spread, it might be useful to use the **log values** to get a balanced distribution.
+From the spread, we observe a right-skewness, thus it might be useful to use the **log values** to get a balanced distribution.
 
 ### group per cohort
 
@@ -170,7 +172,7 @@ df.firstInvoice <-df %>%
 df.firstInvoice$cohort<- as.Date(floor_date(df.firstInvoice$InvoiceDate, "month"))
 groupy_cohort<- df.firstInvoice %>% group_by(cohort) %>% summarise(total_customers=n())
 
-ggplot(data=groupy_cohort,aes(x=cohort,y=total_customers))+geom_bar(stat = "identity")
+ggplot(data=groupy_cohort,aes(x=cohort,y=total_customers))+geom_bar(stat = "identity", fill="steelblue")
 ```
 
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-6-1.png)
@@ -189,7 +191,7 @@ groupy_frequency <- df.per.CustomerID %>% filter(!is.na(ReorderLeadTime)) %>%  g
 groupy_frequency_cohort<- groupy_frequency %>% group_by(cohort) %>% summarise(average.ReorderLeadTime=mean(average.ReorderLeadTime),average.Orders=mean(number_orders),average_orders_value=mean(orders_value))
 
 
-ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.ReorderLeadTime))+ geom_bar(stat = "identity")+ggtitle("Average reorder Leadtime (days) per cohort")
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.ReorderLeadTime))+ geom_bar(stat = "identity",fill="steelblue")+ggtitle("Average reorder Leadtime (days) per cohort")
 ```
 
     ## Don't know how to automatically pick scale for object of type difftime. Defaulting to continuous.
@@ -197,13 +199,13 @@ ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.ReorderLeadTime))+ ge
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
-ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.Orders))+ geom_bar(stat = "identity")+ggtitle("Average number of order per cohort")
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average.Orders))+ geom_bar(stat = "identity",fill="steelblue")+ggtitle("Average number of order per cohort")
 ```
 
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 ``` r
-ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average_orders_value))+ geom_bar(stat = "identity")+ggtitle("Average order value (GBP) per cohort")
+ggplot(data=groupy_frequency_cohort,aes(x=cohort,y=average_orders_value))+ geom_bar(stat = "identity",fill="steelblue")+ggtitle("Average order value (GBP) per cohort")
 ```
 
 ![](helloFresh_dataExploration_files/figure-markdown_github/unnamed-chunk-7-3.png) Interesting enough, the average order value tends to decrease when the cohort gets younger, with an outlier in June 2011.
