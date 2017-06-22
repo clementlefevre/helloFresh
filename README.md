@@ -9,7 +9,7 @@ Using the *ukretail dataset*, i implemented a model to predict the **next order'
 
 I found this assignement quite interesting, and due to the time constraints, i prefered to investigate the next the Purchase Order value rather than it's time. Intuitively, value is more deterministic than time.
 
-With a ${R^2}$ close to 0.76 and unbalanced residuals, my main regret is not have focused on the predictive power of the **ProductStock** feature through clustering.
+With a R^2 close to 0.76 and unbalanced residuals, my main regret is not have focused on the predictive power of the **ProductStock** feature through clustering.
 
 
 Please feel free to contact me for any further questions.
